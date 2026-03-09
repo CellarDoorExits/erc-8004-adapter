@@ -41,6 +41,8 @@
     "vitest": "^3.2.4"
   },
   "license": "Apache-2.0",
+  "author": "Cellar Door (https://cellar-door.dev)",
+  "homepage": "https://cellar-door.dev",
   "repository": {
     "type": "git",
     "url": "https://github.com/CellarDoorExits/erc-8004.git"

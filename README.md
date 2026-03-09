@@ -2,7 +2,7 @@
 
 EXIT Protocol adapter for [ERC-8004 Trustless Agents](https://eips.ethereum.org/EIPS/eip-8004) — link departure records to on-chain agent identities and reputation registries.
 
-> **⚠️ Pre-release software — no formal security audit has been conducted.**
+> **⚠️ Pre-release software — no formal security audit has been conducted.** Report vulnerabilities to hawthornhollows@gmail.com.
 
 ## Install
 
@@ -113,6 +113,24 @@ Departure records written on-chain are **immutable**. The `origin` field (platfo
 ### Known Limitations
 - **Three-DID problem:** EXIT markers use `did:key`, ERC-8004 derives `did:pkh`, and registration files may declare other DIDs. These are not cryptographically linked in v0.1.0.
 - **Ed25519/secp256k1 mismatch:** EXIT proofs use Ed25519 or P-256, but `did:pkh` resolves to secp256k1 keys. Cross-algorithm binding is not yet implemented.
+
+## Ecosystem
+
+| Package | Language | Description |
+|---------|----------|-------------|
+| [cellar-door-exit](https://github.com/CellarDoorExits/exit-door) | TypeScript | Core protocol (reference impl) |
+| [cellar-door-exit](https://github.com/CellarDoorExits/exit-python) | Python | Core protocol |
+| [cellar-door-entry](https://github.com/CellarDoorExits/entry-door) | TypeScript | Arrival/entry markers |
+| [@cellar-door/langchain](https://github.com/CellarDoorExits/langchain) | TypeScript | LangChain integration |
+| [cellar-door-langchain](https://github.com/CellarDoorExits/cellar-door-langchain-python) | Python | LangChain integration |
+| [@cellar-door/vercel-ai-sdk](https://github.com/CellarDoorExits/vercel-ai-sdk) | TypeScript | Vercel AI SDK |
+| [@cellar-door/mcp-server](https://github.com/CellarDoorExits/mcp-server) | TypeScript | MCP server |
+| [@cellar-door/eliza](https://github.com/CellarDoorExits/eliza-exit) | TypeScript | ElizaOS plugin |
+| [@cellar-door/eas](https://github.com/CellarDoorExits/eas-adapter) | TypeScript | EAS attestation anchoring |
+| **[@cellar-door/erc-8004](https://github.com/CellarDoorExits/erc-8004-adapter)** | **TypeScript** | **ERC-8004 identity/reputation ← you are here** |
+| [@cellar-door/sign-protocol](https://github.com/CellarDoorExits/sign-protocol-adapter) | TypeScript | Sign Protocol attestation |
+
+**[Paper](https://cellar-door.dev/paper/) · [Website](https://cellar-door.dev)**
 
 ## License
 
