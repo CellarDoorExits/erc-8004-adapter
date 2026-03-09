@@ -42,7 +42,7 @@ export interface AgentIdentity {
 // EXIT Marker (subset needed for registration)
 // ═══════════════════════════════════════════
 
-export type ExitType = 'voluntary' | 'involuntary' | 'emergency';
+export type ExitType = 'voluntary' | 'forced' | 'emergency' | 'keyCompromise' | 'platform_shutdown' | 'directed' | 'constructive' | 'acquisition';
 
 export interface ExitMarkerLike {
   id: string;
