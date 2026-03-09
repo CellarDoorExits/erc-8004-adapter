@@ -11,49 +11,65 @@ const marker: ExitMarkerLike = {
 };
 
 describe('computeMarkerHash', () => {
-  it('produces a deterministic keccak256 hash', () => {
-    const hash1 = computeMarkerHash(marker);
-    const hash2 = computeMarkerHash(marker);
-    expect(hash1).toBe(hash2);
-    expect(hash1).toMatch(/^0x[0-9a-f]{64}$/);
+  it('produces a keccak256 hash with auto-generated salt', () => {
+    const result = computeMarkerHash(marker);
+    expect(result.hash).toMatch(/^0x[0-9a-f]{64}$/);
+    expect(result.salt).toMatch(/^[0-9a-f]{64}$/);
+  });
+
+  it('is deterministic with explicit salt', () => {
+    const r1 = computeMarkerHash(marker, 'fixed-salt');
+    const r2 = computeMarkerHash(marker, 'fixed-salt');
+    expect(r1.hash).toBe(r2.hash);
+    expect(r1.salt).toBe('fixed-salt');
+  });
+
+  it('auto-generates different salts each call', () => {
+    const r1 = computeMarkerHash(marker);
+    const r2 = computeMarkerHash(marker);
+    expect(r1.salt).not.toBe(r2.salt);
+    expect(r1.hash).not.toBe(r2.hash);
   });
 
   it('produces different hashes for different markers', () => {
-    const hash1 = computeMarkerHash(marker);
-    const hash2 = computeMarkerHash({ ...marker, id: 'urn:exit:test:002' });
-    expect(hash1).not.toBe(hash2);
+    const salt = 'test-salt';
+    const r1 = computeMarkerHash(marker, salt);
+    const r2 = computeMarkerHash({ ...marker, id: 'urn:exit:test:002' }, salt);
+    expect(r1.hash).not.toBe(r2.hash);
   });
 
   it('handles numeric timestamps', () => {
     const numericMarker = { ...marker, timestamp: 1704067200000 };
-    const hash = computeMarkerHash(numericMarker);
-    expect(hash).toMatch(/^0x[0-9a-f]{64}$/);
+    const result = computeMarkerHash(numericMarker, 'salt');
+    expect(result.hash).toMatch(/^0x[0-9a-f]{64}$/);
   });
 
   it('includes origin in hash', () => {
-    const hash1 = computeMarkerHash(marker);
-    const hash2 = computeMarkerHash({ ...marker, origin: 'did:web:other.com' });
-    expect(hash1).not.toBe(hash2);
+    const salt = 'test-salt';
+    const r1 = computeMarkerHash(marker, salt);
+    const r2 = computeMarkerHash({ ...marker, origin: 'did:web:other.com' }, salt);
+    expect(r1.hash).not.toBe(r2.hash);
   });
 
   it('includes exitType in hash', () => {
-    const hash1 = computeMarkerHash(marker);
-    const hash2 = computeMarkerHash({ ...marker, exitType: 'involuntary' as const });
-    expect(hash1).not.toBe(hash2);
+    const salt = 'test-salt';
+    const r1 = computeMarkerHash(marker, salt);
+    const r2 = computeMarkerHash({ ...marker, exitType: 'involuntary' as const }, salt);
+    expect(r1.hash).not.toBe(r2.hash);
   });
 
   it('is not vulnerable to delimiter collision', () => {
-    // Fields containing commas should not collide with different field splits
+    const salt = 'test-salt';
     const marker1 = { ...marker, id: 'a,b', subject: 'c' };
     const marker2 = { ...marker, id: 'a', subject: 'b,c' };
-    const hash1 = computeMarkerHash(marker1);
-    const hash2 = computeMarkerHash(marker2);
-    expect(hash1).not.toBe(hash2);
+    const r1 = computeMarkerHash(marker1, salt);
+    const r2 = computeMarkerHash(marker2, salt);
+    expect(r1.hash).not.toBe(r2.hash);
   });
 
   it('produces different hashes with different salts', () => {
-    const hash1 = computeMarkerHash(marker);
-    const hash2 = computeMarkerHash(marker, 'my-salt');
-    expect(hash1).not.toBe(hash2);
+    const r1 = computeMarkerHash(marker, 'salt-a');
+    const r2 = computeMarkerHash(marker, 'salt-b');
+    expect(r1.hash).not.toBe(r2.hash);
   });
 });

@@ -96,6 +96,24 @@ giveFeedback(agentId, 0, 0, "departure", origin, "", markerUri, markerHash)
 - `feedbackURI` — pointer to full EXIT marker
 - `feedbackHash` — keccak256 commitment of marker content
 
+## Security Considerations
+
+### Permissionless Feedback
+ERC-8004's ReputationRegistry allows **anyone** to post feedback for any agent. This means fake departure records can be created at low cost (fractions of a cent on L2). Consumers of departure data should verify:
+- The `msg.sender` is the agent's owner or authorized operator
+- The `feedbackURI` resolves to a valid, signed EXIT marker
+- The marker's cryptographic proof is valid
+
+### Hash Salt
+`computeMarkerHash()` automatically generates a 256-bit random salt to prevent brute-force attacks on the hash. The salt is returned alongside the hash and **must be stored** for later verification. Without the salt, the hash cannot be recomputed.
+
+### On-Chain Data
+Departure records written on-chain are **immutable**. The `origin` field (platform name) is stored in cleartext. Consider privacy implications before registering departures for sensitive platforms.
+
+### Known Limitations
+- **Three-DID problem:** EXIT markers use `did:key`, ERC-8004 derives `did:pkh`, and registration files may declare other DIDs. These are not cryptographically linked in v0.1.0.
+- **Ed25519/secp256k1 mismatch:** EXIT proofs use Ed25519 or P-256, but `did:pkh` resolves to secp256k1 keys. Cross-algorithm binding is not yet implemented.
+
 ## License
 
 Apache-2.0

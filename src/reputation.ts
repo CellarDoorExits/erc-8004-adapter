@@ -16,13 +16,21 @@ import ReputationRegistryABI from './abis/ReputationRegistry.json' with { type: 
  * collision attacks where field values containing separators produce
  * identical hashes for distinct markers.
  */
-export function computeMarkerHash(marker: ExitMarkerLike, salt?: string): string {
+export function computeMarkerHash(marker: ExitMarkerLike, salt?: string): { hash: string; salt: string } {
+  // Generate random salt if not provided to prevent brute-force attacks.
+  // Origin is low-entropy, exitType has 4 values — ~40 attempts without salt.
+  // The salt MUST be stored alongside the hash for later verification.
+  if (!salt) {
+    const bytes = new Uint8Array(32);
+    crypto.getRandomValues(bytes);
+    salt = Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('');
+  }
   const ts = typeof marker.timestamp === 'string'
     ? Math.floor(new Date(marker.timestamp).getTime() / 1000)
     : Math.floor(Number(marker.timestamp) / 1000);
 
   const coder = AbiCoder.defaultAbiCoder();
-  return keccak256(
+  const hash = keccak256(
     coder.encode(
       ['string', 'string', 'string', 'uint256', 'string', 'string', 'string'],
       [
@@ -32,10 +40,11 @@ export function computeMarkerHash(marker: ExitMarkerLike, salt?: string): string
         ts,
         marker.origin,
         marker.exitType,
-        salt ?? '',
+        salt,
       ],
     ),
   );
+  return { hash, salt };
 }
 
 /**
@@ -80,7 +89,7 @@ export async function registerDeparture(
   );
 
   const agentId = BigInt(options.agentId);
-  const feedbackHash = computeMarkerHash(marker, options.hashSalt);
+  const { hash: feedbackHash, salt: usedSalt } = computeMarkerHash(marker, options.hashSalt);
   const feedbackURI = options.markerUri ?? '';
 
   // Build tx overrides (gas limit, fees, nonce)
@@ -139,5 +148,6 @@ export async function registerDeparture(
     txHash: receipt.hash,
     blockNumber: receipt.blockNumber,
     feedbackIndex,
+    salt: usedSalt,
   };
 }

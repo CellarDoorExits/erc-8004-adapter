@@ -17,7 +17,6 @@ export interface ChainConfig {
   readonly network: NetworkType;
   readonly identityRegistryAddress: string;
   readonly reputationRegistryAddress: string;
-  readonly rpcUrl: string;
 }
 
 // ═══════════════════════════════════════════
@@ -86,6 +85,8 @@ export interface RegisterDepartureResult {
   txHash: string;
   blockNumber: number;
   feedbackIndex: bigint;
+  /** Salt used for marker hash — store this for later verification */
+  salt: string;
 }
 
 // ═══════════════════════════════════════════
