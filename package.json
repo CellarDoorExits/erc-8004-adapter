@@ -1,0 +1,57 @@
+{
+  "name": "@cellar-door/erc-8004",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "EXIT Protocol adapter for ERC-8004 Trustless Agents — link departure records to on-chain agent identities",
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format esm,cjs --dts",
+    "test": "vitest run",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "cellar-door-exit": "^0.2.0"
+  },
+  "peerDependencies": {
+    "ethers": "^6.0.0"
+  },
+  "devDependencies": {
+    "ethers": "^6.0.0",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
+  },
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/CellarDoorExits/erc-8004.git"
+  },
+  "keywords": [
+    "exit",
+    "erc-8004",
+    "trustless-agents",
+    "ai-agent",
+    "departure",
+    "reputation",
+    "ethereum"
+  ]
+}
