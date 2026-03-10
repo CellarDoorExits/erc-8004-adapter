@@ -29,6 +29,7 @@
     "lint": "tsc --noEmit"
   },
   "dependencies": {
+    "@cellar-door/attestation-core": ">=0.1.0",
     "cellar-door-exit": "^0.2.0",
     "viem": "^2.47.1"
   },
