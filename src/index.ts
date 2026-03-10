@@ -23,8 +23,8 @@
 
 // Core operations
 export { resolveAgent, addressToDid } from './identity.js';
-export { registerDeparture, computeMarkerHash } from './reputation.js';
-export { queryDepartures } from './query.js';
+export { registerDeparture, computeMarkerHash, registerArrival, computeArrivalMarkerHash } from './reputation.js';
+export { queryDepartures, queryArrivals } from './query.js';
 
 // Chain configuration
 export { CHAIN_CONFIGS, getChainConfig, chainIdToName } from './chains.js';
@@ -43,4 +43,9 @@ export type {
   QueryDeparturesOptions,
   DepartureRecord,
   ResolveAgentOptions,
+  ArrivalMarkerLike,
+  RegisterArrivalOptions,
+  RegisterArrivalResult,
+  QueryArrivalsOptions,
+  ArrivalRecord,
 } from './types.js';

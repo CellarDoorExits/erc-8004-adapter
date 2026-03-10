@@ -43,6 +43,7 @@ export interface AgentIdentity {
 // ═══════════════════════════════════════════
 
 export type ExitType = 'voluntary' | 'forced' | 'emergency' | 'keyCompromise' | 'platform_shutdown' | 'directed' | 'constructive' | 'acquisition';
+export type ExitStatus = 'good_standing' | 'disputed' | 'unverified';
 
 export interface ExitMarkerLike {
   id: string;
@@ -107,6 +108,63 @@ export interface QueryDeparturesOptions {
 export interface DepartureRecord {
   origin: string;
   exitType: string;
+  timestamp: number;
+  feedbackURI: string;
+  feedbackHash: string;
+  txHash: string;
+  blockNumber: number;
+}
+
+// ═══════════════════════════════════════════
+// Arrival Registration
+// ═══════════════════════════════════════════
+
+export interface ArrivalMarkerLike {
+  id: string;
+  subject: string;
+  destination: string;
+  timestamp: string | number;
+  /** Reference to the departure marker this arrival corresponds to */
+  departureRef: string;
+}
+
+export interface RegisterArrivalOptions {
+  signer: Signer;
+  agentId: bigint | number;
+  chain?: ChainName;
+  /** URI pointing to the full arrival marker (e.g. IPFS) */
+  markerUri?: string;
+  /** Salt for marker hash */
+  hashSalt?: string;
+  /** Transaction overrides (gas, nonce, fees) */
+  txOverrides?: TxOverrides;
+  /** Timeout in ms for receipt waiting (default: 60000) */
+  receiptTimeoutMs?: number;
+}
+
+export interface RegisterArrivalResult {
+  txHash: string;
+  blockNumber: number;
+  feedbackIndex: bigint;
+  /** Salt used for marker hash — store this for later verification */
+  salt: string;
+}
+
+// ═══════════════════════════════════════════
+// Arrival Query
+// ═══════════════════════════════════════════
+
+export interface QueryArrivalsOptions {
+  provider: Provider;
+  chain?: ChainName;
+  fromBlock?: number;
+  toBlock?: number | string;
+  limit?: number;
+}
+
+export interface ArrivalRecord {
+  destination: string;
+  departureRef: string;
   timestamp: number;
   feedbackURI: string;
   feedbackHash: string;

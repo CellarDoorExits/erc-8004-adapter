@@ -29,7 +29,8 @@
     "lint": "tsc --noEmit"
   },
   "dependencies": {
-    "cellar-door-exit": "^0.2.0"
+    "cellar-door-exit": "^0.2.0",
+    "viem": "^2.47.1"
   },
   "peerDependencies": {
     "ethers": "^6.0.0"

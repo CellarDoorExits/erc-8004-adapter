@@ -1,6 +1,6 @@
 import { Contract, EventLog } from 'ethers';
 import { getChainConfig, chainIdToName } from './chains.js';
-import type { DepartureRecord, QueryDeparturesOptions, ChainName } from './types.js';
+import type { DepartureRecord, QueryDeparturesOptions, ArrivalRecord, QueryArrivalsOptions, ChainName } from './types.js';
 import ReputationRegistryABI from './abis/ReputationRegistry.json' with { type: 'json' };
 
 /**
@@ -95,4 +95,76 @@ export async function queryDepartures(
   }
 
   return departures;
+}
+
+/**
+ * Query an agent's arrival history from the ReputationRegistry.
+ *
+ * Searches for NewFeedback events where tag1="arrival" for the given agent.
+ */
+export async function queryArrivals(
+  agentId: bigint | number,
+  options: QueryArrivalsOptions,
+): Promise<ArrivalRecord[]> {
+  const { provider } = options;
+
+  let chainName: ChainName | undefined = options.chain;
+  if (!chainName) {
+    const network = await provider.getNetwork();
+    chainName = chainIdToName(Number(network.chainId));
+    if (!chainName) {
+      throw new Error(`Unknown chain ID: ${network.chainId}. Pass chain explicitly.`);
+    }
+  }
+
+  const config = getChainConfig(chainName);
+  const registry = new Contract(
+    config.reputationRegistryAddress,
+    ReputationRegistryABI,
+    provider,
+  );
+
+  const id = BigInt(agentId);
+
+  let fromBlock: number | string = options.fromBlock ?? 0;
+  const toBlock: number | string = options.toBlock ?? 'latest';
+
+  if (typeof fromBlock === 'number' && fromBlock < 0) {
+    const latest = await provider.getBlockNumber();
+    fromBlock = Math.max(0, latest + fromBlock);
+  }
+
+  const filter = registry.filters.NewFeedback(id, null, null, null, null, 'arrival');
+  const events = await registry.queryFilter(filter, fromBlock, toBlock);
+
+  const limit = options.limit ?? events.length;
+  const relevantEvents = events.slice(-limit);
+  const blockNumbers = [...new Set(relevantEvents.map(e => e.blockNumber))];
+  const blockTimestamps = new Map<number, number>();
+
+  const blocks = await Promise.all(
+    blockNumbers.map(n => provider.getBlock(n)),
+  );
+  for (const block of blocks) {
+    if (block) blockTimestamps.set(block.number, block.timestamp);
+  }
+
+  const arrivals: ArrivalRecord[] = [];
+
+  for (const event of relevantEvents) {
+    if (!(event instanceof EventLog)) continue;
+
+    const args = event.args;
+    arrivals.push({
+      destination: args.tag2,
+      departureRef: args.endpoint,
+      timestamp: blockTimestamps.get(event.blockNumber) ?? 0,
+      feedbackURI: args.feedbackURI,
+      feedbackHash: args.feedbackHash,
+      txHash: event.transactionHash,
+      blockNumber: event.blockNumber,
+    });
+  }
+
+  return arrivals;
 }
