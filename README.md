@@ -2,6 +2,8 @@
 
 EXIT Protocol adapter for [ERC-8004 Trustless Agents](https://eips.ethereum.org/EIPS/eip-8004) — link departure records to on-chain agent identities and reputation registries.
 
+> **[𓉸 Passage Protocol](https://cellar-door.dev)** · [exit-door](https://github.com/CellarDoorExits/exit-door) · [entry-door](https://github.com/CellarDoorExits/entry-door) · [mcp](https://github.com/CellarDoorExits/mcp-server) · [langchain](https://github.com/CellarDoorExits/langchain) · [vercel](https://github.com/CellarDoorExits/vercel-ai-sdk) · [eliza](https://github.com/CellarDoorExits/eliza-exit) · [eas](https://github.com/CellarDoorExits/eas-adapter) · [erc-8004](https://github.com/CellarDoorExits/erc-8004-adapter) · [sign](https://github.com/CellarDoorExits/sign-protocol-adapter) · [python](https://github.com/CellarDoorExits/exit-python)
+
 > **⚠️ Pre-release software — no formal security audit has been conducted.** Report vulnerabilities to hawthornhollows@gmail.com.
 
 ## Install
